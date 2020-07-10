@@ -36,11 +36,13 @@ fn main() {
     };
 
     let client = DtnClient::with_host_and_port("127.0.0.1".into(), port);
+    let sender = client.local_node_id().unwrap();
+    let title = format!("DTN DWD Command Center @ {}", sender);
     //    bndl.primary.lifetime = std::time::Duration::from_secs(lifetime);
 
     let html_content = include_str!("../www/index.html");
     web_view::builder()
-        .title("DTN DWD Command Center")
+        .title(&title)
         .content(Content::Html(html_content))
         .size(800, 600)
         .resizable(false)

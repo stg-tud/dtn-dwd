@@ -43,7 +43,7 @@ function handleBundle(warnings_json) {
                 txtRaw.scrollTop = txtRaw.scrollHeight;
                 console.log(warn_key);
                 warn_history.add(warn_key);
-                renderAlert(item.start, item.headline, item.description, item.instruction);
+                renderAlert(item.start / 1000, item.headline, item.description, item.instruction);
             }
         });
     });

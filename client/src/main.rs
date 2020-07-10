@@ -94,9 +94,11 @@ fn main() -> anyhow::Result<()> {
     let html_content = include_str!("../www/index.html");
     let client = DtnClient::with_host_and_port("127.0.0.1".into(), port);
     client.register_application_endpoint(&endpoint.to_string())?;
+    let sender = client.local_node_id().unwrap();
 
+    let title = format!("DTN DWD Client @ {}", sender);
     let webview = web_view::builder()
-        .title("DTN DWD Client")
+        .title(&title)
         .content(Content::Html(html_content))
         .size(800, 600)
         .resizable(false)
