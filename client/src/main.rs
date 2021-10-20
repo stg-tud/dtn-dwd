@@ -3,7 +3,7 @@ use bp7::{Bundle, EndpointID};
 use dtn7_plus::client::DtnClient;
 use json;
 use serde::Deserialize;
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 use std::env;
 use tinyfiledialogs::MessageBoxIcon;
 use web_view::*;
@@ -29,7 +29,7 @@ impl Connection {
             self.last = *last;
             self.handle.dispatch(move |webview| {
                 webview.eval(dbg!(&format!("handleBundle('{}');\n", json_str)))
-            });
+            })?;
         }
 
         Ok(())
@@ -38,6 +38,7 @@ impl Connection {
 
 impl Handler for Connection {
     fn on_open(&mut self, _: Handshake) -> Result<()> {
+        self.out.send(dbg!("/bundle"))?;
         self.out
             .send(dbg!(format!("/subscribe {}", self.endpoint)))?;
         Ok(())
@@ -86,13 +87,13 @@ fn main() -> anyhow::Result<()> {
     let port: u16 = if args.len() > 1 {
         args[1].parse::<u16>().unwrap()
     } else {
-        3002
+        3000
     };
     let local_url = format!("ws://127.0.0.1:{}/ws", port);
-    let endpoint = EndpointID::with_dtn("warnings/dwd")?;
 
     let html_content = include_str!("../www/index.html");
     let client = DtnClient::with_host_and_port("127.0.0.1".into(), port);
+    let endpoint: EndpointID = "dtn://warnings/~dwd".try_into()?;
     client.register_application_endpoint(&endpoint.to_string())?;
     let sender = client.local_node_id().unwrap();
 

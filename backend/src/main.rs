@@ -1,7 +1,7 @@
 use bp7::{Bundle, EndpointID};
 use dtn7_plus::client::DtnClient;
 use serde::Deserialize;
-use std::env;
+use std::{convert::TryInto, env};
 use tinyfiledialogs::MessageBoxIcon;
 use web_view::*;
 
@@ -17,8 +17,8 @@ fn make_bundle(client: &DtnClient, data: String) -> Bundle {
     let cts = client.creation_timestamp().unwrap();
 
     let mut bndl = bp7::bundle::new_std_payload_bundle(
-        sender.clone(),
-        EndpointID::with_dtn("warnings/dwd").unwrap(),
+        sender,
+        "dtn://warnings/~dwd".try_into().unwrap(),
         data.as_bytes().to_vec(),
     );
 
