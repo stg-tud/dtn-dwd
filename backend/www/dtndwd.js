@@ -1,3 +1,11 @@
+function sendMessageToServer(cmd) {
+  if (window.external !== undefined) {
+    return window.external.invoke(cmd);
+  } else if (window.webkit.messageHandlers.external !== undefined) {
+    return window.webkit.messageHandlers.external.postMessage(cmd);
+  }
+  throw new Error('Failed to locate webkit external handler')
+}
 
 var json = {};
 
@@ -38,7 +46,7 @@ function btnPublishClicked() {
     "cmd": "publish",
     "data": JSON.stringify(json)
   };
-  external.invoke(JSON.stringify(pub_data));
+  sendMessageToServer(JSON.stringify(pub_data));
 }
 
 function btnAddNewWarningClicked() {

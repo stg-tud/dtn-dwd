@@ -1,3 +1,12 @@
+function sendMessageToServer(cmd) {
+    if (window.external !== undefined) {
+        return window.external.invoke(cmd);
+    } else if (window.webkit.messageHandlers.external !== undefined) {
+        return window.webkit.messageHandlers.external.postMessage(cmd);
+    }
+    throw new Error('Failed to locate webkit external handler')
+}
+
 var json = {};
 
 var txtRaw = document.getElementById("txtRaw");
@@ -13,7 +22,7 @@ function renderAlert(ts, headline, description, instruction) {
         </button>
     </div>
     `;
-    var s = new Date(ts * 1000 ).toLocaleString("de-DE");
+    var s = new Date(ts * 1000).toLocaleString("de-DE");
     console.log(ts);
     console.log(s);
     alert_html = alert_html.replace("HEADLINE", headline).replace("DESCRIPTION", description).replace("INSTRUCTION", instruction).replace("TIME", s);
@@ -35,7 +44,7 @@ function handleBundle(warnings_json) {
     var s = new Date(last_ts).toLocaleString("de-DE");
     last.innerHTML = s;
     Object.keys(warns).forEach((key, index) => {
-        warns[key].forEach(function(item, index) {
+        warns[key].forEach(function (item, index) {
             console.log(item);
             let warn_key = key + item.regionName + item.start + item.headline;
             if (!warn_history.has(warn_key)) {
@@ -50,7 +59,7 @@ function handleBundle(warnings_json) {
 }
 function btnTestClicked() {
     console.log("test");
-    var ts = Math. round((new Date()). getTime() / 1000);
+    var ts = Math.round((new Date()).getTime() / 1000);
     renderAlert(ts, "TIMER", "all good here", "just stay home");
 }
 
@@ -94,7 +103,7 @@ function btnPublishClicked() {
         "cmd": "publish",
         "data": JSON.stringify(json)
     };
-    external.invoke(JSON.stringify(pub_data));
+    sendMessageToServer(JSON.stringify(pub_data));
 }
 
 function btnAddNewWarningClicked() {
@@ -138,7 +147,7 @@ function modalCloseClicked() {
     modal.style.display = "none";
 }
 // When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }
