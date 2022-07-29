@@ -1,4 +1,4 @@
-use bp7::{Bundle, EndpointID};
+use bp7::Bundle;
 use dtn7_plus::client::DtnClient;
 use serde::Deserialize;
 use std::{convert::TryInto, env};
